@@ -1,8 +1,8 @@
 package main
 
 import (
-	"usermanagement/config"
-	"usermanagement/routes"
+	"github.com/dev-saiful/umanagement/config"
+	"github.com/dev-saiful/umanagement/routes"
 
 	"github.com/gin-gonic/gin"
 )

@@ -3,8 +3,8 @@ package controllers
 import (
 	"errors"
 	"net/http"
-	"usermanagement/config"
-	"usermanagement/models"
+	"github.com/dev-saiful/umanagement/config"
+	"github.com/dev-saiful/umanagement/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -12,6 +12,7 @@ import (
 )
 
 var validate *validator.Validate
+var db = config.DB
 
 func init() {
 	validate = validator.New()
@@ -22,7 +23,7 @@ func Login(ctx *gin.Context) {
 }
 
 func Signup(ctx *gin.Context) {
-	var db = config.DB
+	
 	var signupReq models.SignupRequest
 	// request body
 	err := ctx.ShouldBindJSON(&signupReq)

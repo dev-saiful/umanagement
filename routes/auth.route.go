@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"usermanagement/controllers"
+	"github.com/dev-saiful/umanagement/controllers"
 
 	"github.com/gin-gonic/gin"
 )
