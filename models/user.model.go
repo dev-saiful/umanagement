@@ -4,7 +4,14 @@ import (
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
+
+type LoginRequest struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+
+}
 
 type SignupRequest struct {
 	Username        string `json:"username" binding:"required"`
@@ -14,7 +21,7 @@ type SignupRequest struct {
 }
 
 type User struct {
-	ID        uint      `json:"id" gorm:"primary_key"`
+	gorm.Model
 	Username  string    `json:"username" gorm:"not null"`
 	Password  string    `json:"password" gorm:"not null"`
 	Email     string    `json:"email" gorm:"not null;unique"`
@@ -28,5 +35,13 @@ func (u *User) HashPassword(password string) error {
 		return err
 	}
 	u.Password = string(bytes)
+	return nil
+}
+
+func (u *User) CheckPassword(password string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password),[]byte(password))
+	if err != nil {
+		return err
+	}
 	return nil
 }
