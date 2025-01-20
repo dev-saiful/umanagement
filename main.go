@@ -10,9 +10,7 @@ import (
 func main() {
 	
 	config.InitDB()
-
 	router := gin.Default()
-	routes.AuthRoutes(router)
-
+	routes.SetupRoutes(router)
 	router.Run(":5000") // listen and serve on 0.0.0.0:5000
 }
