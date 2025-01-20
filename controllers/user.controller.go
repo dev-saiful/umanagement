@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/dev-saiful/umanagement/config"
@@ -13,7 +12,6 @@ func GetProfile(ctx *gin.Context) {
 
 	// Get the user email from the context
 	email, _ := ctx.Get("email")
-	fmt.Print(email)
 	// Initialize user model
 	var user models.User
 	db := config.DB

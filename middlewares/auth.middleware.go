@@ -32,6 +32,19 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		ctx.Set("email", payload.Email)
+		ctx.Set("role",payload.Role)
 		ctx.Next()
 	}
+}
+
+func RoleMiddleware(requiredRole string) gin.HandlerFunc {
+    return func(ctx *gin.Context) {
+        role, exists := ctx.Get("role")
+        if !exists || role != requiredRole {
+            ctx.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+            ctx.Abort()
+            return
+        }
+        ctx.Next()
+    }
 }

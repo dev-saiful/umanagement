@@ -18,8 +18,8 @@ func init() {
 }
 
 func Login(ctx *gin.Context) {
-	var db = config.DB 
-	var loginReq models.LoginRequest 
+	var db = config.DB
+	var loginReq models.LoginRequest
 	err := ctx.ShouldBindJSON(&loginReq) // Bind the incoming JSON request to loginReq struct
 	if err != nil {
 		// If binding fails, return a 400 Bad Request response with an error message
@@ -35,10 +35,10 @@ func Login(ctx *gin.Context) {
 	// user exists
 	var user models.User
 	err = db.Where("email = ?", loginReq.Email).First(&user).Error
-if err != nil{
-	ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email or password"})
-        return
-}
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email or password"})
+		return
+	}
 	// Check if the provided password matches the hashed password in the database
 	err = user.CheckPassword(loginReq.Password)
 	if err != nil {
@@ -47,19 +47,19 @@ if err != nil{
 		return
 	}
 	// Generate JWT token
-	token, err := utils.GenerateJWT(user.Email)
+	token, err := utils.GenerateJWT(user.Email, user.Role)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "Could not generate token"})
 		return
 	}
 
 	// Return a 200 OK response indicating the user was successfully logged in
-	ctx.JSON(200, gin.H{"message": "Login","token": token})
+	ctx.JSON(200, gin.H{"message": "Login", "token": token})
 }
 
 func Signup(ctx *gin.Context) {
-	var db = config.DB            
-	var signupReq models.SignupRequest 
+	var db = config.DB
+	var signupReq models.SignupRequest
 
 	// Bind the incoming JSON request to signupReq struct
 	err := ctx.ShouldBindJSON(&signupReq)
@@ -97,12 +97,12 @@ func Signup(ctx *gin.Context) {
 		return
 	}
 
-
 	// Create a new User instance with the validated data
 	user := models.User{
 		Username: signupReq.Username,
 		Password: signupReq.Password, // The password will be hashed before saving
 		Email:    signupReq.Email,
+		Role: signupReq.Role,
 	}
 	// Hash the user's password before storing it in the database
 	err = user.HashPassword(user.Password)
@@ -122,4 +122,3 @@ func Signup(ctx *gin.Context) {
 	// Return a 201 Created response indicating the user was successfully created
 	ctx.JSON(http.StatusCreated, gin.H{"message": "Signup successful"})
 }
-

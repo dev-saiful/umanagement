@@ -9,16 +9,18 @@ import (
 
 type Payload struct {
 	Email string `json:"email"`
+	Role  string `json:"role"`
 	jwt.RegisteredClaims
 }
 
 var JwtKey = []byte("my_secret")
 
-func GenerateJWT(email string) (string, error) {
+func GenerateJWT(email,role string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 
 	payload := &Payload{
 		Email: email,
+		Role: role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
