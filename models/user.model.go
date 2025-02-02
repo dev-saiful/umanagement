@@ -1,7 +1,6 @@
 package models
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -24,21 +23,4 @@ type User struct {
 	Password string `json:"password" gorm:"not null"`
 	Email    string `json:"email" gorm:"not null;unique"`
 	Role     string `json:"role" gorm:"not null;default:'user'"`
-}
-
-func (u *User) HashPassword(password string) error {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	if err != nil {
-		return err
-	}
-	u.Password = string(bytes)
-	return nil
-}
-
-func (u *User) CheckPassword(password string) error {
-	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
-	if err != nil {
-		return err
-	}
-	return nil
 }

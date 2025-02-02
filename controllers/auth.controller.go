@@ -3,9 +3,8 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/dev-saiful/umanagement/config"
 	"github.com/dev-saiful/umanagement/models"
-	"github.com/dev-saiful/umanagement/utils"
+	"github.com/dev-saiful/umanagement/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -18,9 +17,9 @@ func init() {
 }
 
 func Login(ctx *gin.Context) {
-	var db = config.DB
 	var loginReq models.LoginRequest
-	err := ctx.ShouldBindJSON(&loginReq) // Bind the incoming JSON request to loginReq struct
+	// Bind the incoming JSON request to loginReq struct
+	err := ctx.ShouldBindJSON(&loginReq)
 	if err != nil {
 		// If binding fails, return a 400 Bad Request response with an error message
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "All fields are required"})
@@ -32,35 +31,18 @@ func Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid email"})
 		return
 	}
-	// user exists
-	var user models.User
-	err = db.Where("email = ?", loginReq.Email).First(&user).Error
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email or password"})
-		return
-	}
-	// Check if the provided password matches the hashed password in the database
-	err = user.CheckPassword(loginReq.Password)
-	if err != nil {
-		// If the passwords do not match, return a 401 Unauthorized response
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid email or password"})
-		return
-	}
-	// Generate JWT token
-	token, err := utils.GenerateJWT(user.Email, user.Role)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "Could not generate token"})
-		return
-	}
 
+	token, err := services.Login(loginReq)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	// Return a 200 OK response indicating the user was successfully logged in
-	ctx.JSON(200, gin.H{"message": "Login", "token": token})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Login", "token": token})
 }
 
 func Signup(ctx *gin.Context) {
-	var db = config.DB
 	var signupReq models.SignupRequest
-
 	// Bind the incoming JSON request to signupReq struct
 	err := ctx.ShouldBindJSON(&signupReq)
 	if err != nil {
@@ -97,25 +79,10 @@ func Signup(ctx *gin.Context) {
 		return
 	}
 
-	// Create a new User instance with the validated data
-	user := models.User{
-		Username: signupReq.Username,
-		Password: signupReq.Password, // The password will be hashed before saving
-		Email:    signupReq.Email,
-		Role: signupReq.Role,
-	}
-	// Hash the user's password before storing it in the database
-	err = user.HashPassword(user.Password)
-	if err != nil {
-		// If password hashing fails, return a 500 Internal Server Error response
-		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to hash password"})
-		return
-	}
-
 	// Save the new user record to the database
-	err = db.Create(&user).Error
+	err = services.Signup(signupReq)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Email or username already exists"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 

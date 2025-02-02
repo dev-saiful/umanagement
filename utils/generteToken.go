@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -13,7 +14,7 @@ type Payload struct {
 	jwt.RegisteredClaims
 }
 
-var JwtKey = []byte("my_secret")
+var JwtKey = []byte(os.Getenv("JWT_SECRET"))
 
 func GenerateJWT(email,role string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)

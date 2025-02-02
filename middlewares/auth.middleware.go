@@ -28,6 +28,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		payload, err := utils.VerifyJWT(bearerToken[1])
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+			ctx.Abort()
 			return
 		}
 
