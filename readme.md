@@ -64,7 +64,7 @@ API Endpoints
 Authentication
 
 * Login
-    * ```POST /api/login```
+    * ```POST /api/v1/auth/login```
     * Request Body: ```{ "email": "user@example.com", "password": "password" }```
     * Response: ```{ "token": "jwt_token" }```
 
@@ -73,21 +73,21 @@ User Management
 
 * Get All Users
 
-    * ```GET /api/users```
+    * ```GET /api/v1/user/users```
     * Headers: ```{ "Authorization": "Bearer jwt_token" }```
     * Response: ```[ { "id": 1, "email": "user@example.com", "username": "username" } ]```
 
 * Get User by ID
 
-    * ```GET /api/users/:id```
+    * ```GET /api/v1/user/users/:id```
     * Headers: ```{ "Authorization": "Bearer jwt_token" }```
     * Response: ```{ "id": 1, "email": "user@example.com", "username": "username" }```
 
 * Get Admin by Email
 
-    * ```GET /api/admin/:email```
+    * ```GET /api/v1/user/admin```
     * Headers: ```{ "Authorization": "Bearer jwt_token" }```
-    Response: ```{ "id": 1, "email": "admin@example.com", "username": "admin", "role": "admin" }```
+    * Response: ```{ "id": 1, "email": "admin@example.com", "username": "admin", "role": "admin" }```
 
 
 ## Contributing
