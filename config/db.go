@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/dev-saiful/umanagement/models"
 	"gorm.io/driver/postgres"
@@ -12,9 +14,13 @@ import (
 var DB *gorm.DB
 
 func InitDB() {
+	host := os.Getenv("DATABASE_HOST")
+	user := os.Getenv("DATABASE_USER")
+	password := os.Getenv("DATABASE_PASSWORD")
+	name := os.Getenv("DATABASE_NAME")
 	// Postgresql connection string
-	dsn := "host=ep-shy-shape-a1aajhjj.ap-southeast-1.pg.koyeb.app user=koyeb-adm password=npg_Ixl2rvZ9NCKW dbname=koyebdb"
-
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s", host, user, password, name)
+    log.Println("Connecting to database with DSN")
 	// Open connection to database
 	db, err := gorm.Open((postgres.Open(dsn)), &gorm.Config{})
 
